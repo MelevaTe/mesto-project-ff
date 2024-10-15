@@ -1,39 +1,10 @@
-export const initialCards = [
-  {
-    name: "Архыз",
-    link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/arkhyz.jpg",
-  },
-  {
-    name: "Челябинская область",
-    link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/chelyabinsk-oblast.jpg",
-  },
-  {
-    name: "Иваново",
-    link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/ivanovo.jpg",
-  },
-  {
-    name: "Камчатка",
-    link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/kamchatka.jpg",
-  },
-  {
-    name: "Холмогорский район",
-    link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/kholmogorsky-rayon.jpg",
-  },
-  {
-    name: "Байкал",
-    link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/baikal.jpg",
-  }
-];
-
+import { openModal } from './modal.js';
 const cardTemplateElement=document.querySelector("#card-template").content;
-
-export const addCard = (item, deleteFunc, cardContainerElement) => {
-  const cardElement = createCard(item, deleteFunc);
-  cardContainerElement.prepend(cardElement);
-};
+const imageInPopupImg = document.querySelector(".popup_type_image .popup__image");
+const captionInPopupImg = document.querySelector(".popup_type_image .popup__caption");
 
 
-export const createCard = (item, deleteFunc, GetLike) => {
+export const createCard = (item, deleteFunc, getLike) => {
   const cardElement = cardTemplateElement.querySelector(".card").cloneNode(true);
   const cardImageElement = cardElement.querySelector(".card__image");
   const cardTitle = item.name;
@@ -41,7 +12,11 @@ export const createCard = (item, deleteFunc, GetLike) => {
   cardImageElement.src = cardLink;
   cardImageElement.alt = cardTitle;
   cardElement.querySelector(".card__title").textContent = cardTitle;
-  cardElement.querySelector(".card__delete-button").addEventListener("click", deleteFunc );
+  cardElement.querySelector(".card__delete-button").addEventListener("click", deleteFunc);
+  cardImageElement.addEventListener("click", () => {
+    handleImageClick(cardLink, cardTitle);
+  });
+  cardElement.querySelector(".card__like-button").addEventListener("click", getLike);
   return cardElement;
 }
 
@@ -50,10 +25,15 @@ export const deleteCard = (event) => {
 };
 
 
-
-
-export function GetLike(evt) {
+export function getLike(evt) {
   if (evt.target.classList.contains("card__like-button")) {
     evt.target.classList.toggle("card__like-button_is-active");
   }
+}
+
+const handleImageClick = (src, alt) => {
+  imageInPopupImg.src = src;
+  imageInPopupImg.alt = alt;
+  captionInPopupImg.textContent = alt;
+  openModal(document.querySelector(".popup_type_image"));
 }
