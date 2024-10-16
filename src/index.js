@@ -1,13 +1,20 @@
 import './pages/index.css';
 import { openModal, closeModal } from './components/modal.js';
-import { deleteCard, createCard, getLike } from './components/cards.js';
+import { deleteCard, createCard, getLike, imageInPopupImg, captionInPopupImg } from './components/cards.js';
 import { initialCards } from './components/initialCards.js';
 
 const containerElement = document.querySelector(".content");
 const cardContainerElement = containerElement.querySelector(".places__list");
 
+const handleImageClick = (src, alt) => {
+  imageInPopupImg.src = src;
+  imageInPopupImg.alt = alt;
+  captionInPopupImg.textContent = alt;
+  openModal(popupImage);
+}
+
 const addCard = (item, deleteFunc, cardContainerElement) => {
-  const cardElement = createCard(item, deleteFunc);
+  const cardElement = createCard(item, deleteFunc, getLike, handleImageClick);
   cardContainerElement.prepend(cardElement);
 };
 
@@ -19,15 +26,15 @@ const jobInput = profileEditForm.elements.description;
 
 
 
-const setCloseListeners = (pops) => {
-  const popupCloseBtn = pops.querySelector(".popup__close");
+const setCloseListeners = (popup) => {
+  const popupCloseBtn = popup.querySelector(".popup__close");
   popupCloseBtn.addEventListener("click", () => {
-      closeModal(pops)
+      closeModal(popup)
   });
 
-  pops.addEventListener("mousedown", (evt) => {
+  popup.addEventListener("mousedown", (evt) => {
       if (evt.target.classList.contains("popup")) {
-          closeModal(pops);
+          closeModal(popup);
       }
   });
 }
@@ -82,6 +89,3 @@ function handleCardFormSubmit(evt) {
 
 profileEditForm.addEventListener("submit", handleProfileFormSubmit);
 newCardEditForm.addEventListener("submit", handleCardFormSubmit);
-
-
-cardContainerElement.addEventListener("click", getLike);

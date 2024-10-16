@@ -1,10 +1,9 @@
-import { openModal } from './modal.js';
 const cardTemplateElement=document.querySelector("#card-template").content;
-const imageInPopupImg = document.querySelector(".popup_type_image .popup__image");
-const captionInPopupImg = document.querySelector(".popup_type_image .popup__caption");
+export const imageInPopupImg = document.querySelector(".popup_type_image .popup__image");
+export const captionInPopupImg = document.querySelector(".popup_type_image .popup__caption");
 
 
-export const createCard = (item, deleteFunc, getLike) => {
+export const createCard = (item, deleteFunc, getLike, handleImageClick) => {
   const cardElement = cardTemplateElement.querySelector(".card").cloneNode(true);
   const cardImageElement = cardElement.querySelector(".card__image");
   const cardTitle = item.name;
@@ -31,9 +30,3 @@ export function getLike(evt) {
   }
 }
 
-const handleImageClick = (src, alt) => {
-  imageInPopupImg.src = src;
-  imageInPopupImg.alt = alt;
-  captionInPopupImg.textContent = alt;
-  openModal(document.querySelector(".popup_type_image"));
-}
