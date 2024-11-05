@@ -44,7 +44,6 @@ export const createCard = (item, deleteFunc, getLike, handleImageClick, userId) 
   cardElement.querySelector(".card__like-button").addEventListener("click", (evt) =>{
     getLike(cardId, evt, likesCounter);
   });
-  console.log(cardElement)
   return cardElement;
 }
 

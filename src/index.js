@@ -2,11 +2,8 @@ import './pages/index.css';
 import { openModal, closeModal } from './components/modal.js';
 import { deleteCard, createCard, getLike, imageInPopupImg, captionInPopupImg } from './components/cards.js';
 import { enableValidation, clearValidation, validationConfig } from './components/validation';
-import { getInitialCards } from './components/api'
-import { getProfileInfo } from './components/api'
-import { pathProfileInfo } from './components/api'
-import {postNewCard} from './components/api'
-import {pathProfileAvatar} from './components/api'
+import { getInitialCards, getProfileInfo, pathProfileInfo, postNewCard, pathProfileAvatar } from './components/api'
+
 
 const containerElement = document.querySelector(".content");
 const cardContainerElement = containerElement.querySelector(".places__list");
@@ -132,7 +129,6 @@ const avatarInput = newProfileAvatarForm.elements["link-avatar"];
 function handleAvatarForSubmit(evt) {
   evt.preventDefault();
   renderLoading(true, popupNewAvatar.querySelector(".popup__button"));
-  console.log(avatarInput.value);
   pathProfileAvatar(avatarInput.value)
     .then((result) => {
       console.log(result)
