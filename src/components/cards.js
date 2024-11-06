@@ -1,8 +1,5 @@
-import {deleteCardServer} from './api'
-import {putLike} from './api'
-import {deleteLike} from './api'
-import {popupDeleteCard} from "../index.js"
-import { openModal, closeModal} from './modal'
+import {deleteCardServer, putLike, deleteLike} from './api'
+import {handleDeleteCard} from "../index.js"
 
 
 
@@ -55,60 +52,12 @@ export const deleteCard = (cardId,evt) => {
 
 export function getLike(cardId, evt, likesCounter) {
   if (evt.target.classList.contains("card__like-button")) {
-    evt.target.classList.toggle("card__like-button_is-active");
+    const likeMethod = evt.target.classList.contains("card__like-button_is-active") ? deleteLike : putLike;
+    likeMethod(cardId) 
+      .then((result) => {
+          likesCounter.textContent= result.likes.length; 
+           evt.target.classList.toggle("card__like-button_is-active"); 
+        })
+    .catch(err => console.log(err));
   }
-  if (evt.target.classList.contains("card__like-button_is-active")) {
-    putLike(cardId)
-    .then((result) => {
-      likesCounter.textContent= result.likes.length;
-
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-    
-  }
-  else {
-    deleteLike(cardId)
-    .then((result) => {
-      likesCounter.textContent= result.likes.length;
-
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  }
-}
-
-
-
-let cardForDelete = {};
-
-export const handleDeleteCard = (cardId, cardElement) => {
-  cardForDelete = {
-    id: cardId,
-    cardElement
-  };
-  openModal(popupDeleteCard);
-};
-
-const deleteCardForm = document.forms["delete-card"];
-
-deleteCardForm.addEventListener("submit", handleDeleteCardSubmit);
-
-function handleDeleteCardSubmit(evt) {
-  evt.preventDefault();
-
-  if (!cardForDelete.cardElement) return;
-
-  deleteCardServer(cardForDelete.id)
-    .then(() => {
-      cardForDelete.cardElement.remove();
-      closeModal(popupDeleteCard);
-      cardForDelete = {};
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  
 }

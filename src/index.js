@@ -1,9 +1,9 @@
 import './pages/index.css';
 import { openModal, closeModal } from './components/modal.js';
 import { deleteCard, createCard, getLike, imageInPopupImg, captionInPopupImg } from './components/cards.js';
-import { enableValidation, clearValidation, validationConfig } from './components/validation';
-import { getInitialCards, getProfileInfo, pathProfileInfo, postNewCard, pathProfileAvatar } from './components/api'
-
+import { enableValidation, clearValidation} from './components/validation';
+import { getInitialCards, getProfileInfo, pathProfileInfo, postNewCard, pathProfileAvatar, deleteCardServer } from './components/api'
+import {validationConfig} from "./components/validationconfig"
 
 const containerElement = document.querySelector(".content");
 const cardContainerElement = containerElement.querySelector(".places__list");
@@ -12,16 +12,6 @@ const description = containerElement.querySelector(".profile__description");
 const profileImage = containerElement.querySelector(".profile__image")
 
 let userId='';
-getProfileInfo()
-  .then((result) => {
-    title.textContent = result.name;
-    description.textContent = result.about;
-    userId = result._id;
-    profileImage.style.backgroundImage = `url(${result.avatar})`;
-  })
-  .catch((err) => {
-    console.log(err);
-  });
 
 const handleImageClick = (src, alt) => {
   imageInPopupImg.src = src;
@@ -35,22 +25,21 @@ const addCard = (item, deleteFunc, cardContainerElement, userId) => {
   cardContainerElement.prepend(cardElement);
 };
 
-getInitialCards()
-  .then((result) => {
-    result.forEach(item => addCard(item, deleteCard, cardContainerElement, userId));
+
+
+const promises = [getProfileInfo(), getInitialCards()]
+Promise.all(promises) 
+  .then(([userInfo, cards]) => { 
+    title.textContent = userInfo.name;
+    description.textContent = userInfo.about;
+    userId = userInfo._id;
+    profileImage.style.backgroundImage = `url(${userInfo.avatar})`;
+    cards.forEach(item => addCard(item, deleteCard, cardContainerElement, userId));
   })
-  .catch((err) => {
-    console.log(err);
-  });
-
-const promises = [getProfileInfo, getInitialCards]
-
-Promise.all(promises)
-  .then((results) => {
-    console.log(results);
-  }); 
+.catch(err => console.error(err));
 
 
+  
 
 const profileEditForm = document.forms["edit-profile"];
 const nameInput = profileEditForm.elements.name;
@@ -169,14 +158,40 @@ function handleCardFormSubmit(evt) {
 }
 
 function renderLoading(isLoading, button) {
-  if (isLoading) {
-    button.textContent="Сохранение..."
-  }
-  else {
-    button.textContent="Сохранить";
-  }
+  button.textContent=isLoading ? "Сохранение..." : "Сохранить"
 }
 
+
+let cardForDelete = null;
+
+export const handleDeleteCard = (cardId, cardElement) => {
+  cardForDelete = {
+    id: cardId,
+    cardElement
+  };
+  openModal(popupDeleteCard);
+};
+
+const deleteCardForm = document.forms["delete-card"];
+
+deleteCardForm.addEventListener("submit", handleDeleteCardSubmit);
+
+function handleDeleteCardSubmit(evt) {
+  evt.preventDefault();
+
+  if (!cardForDelete.cardElement) return;
+
+  deleteCardServer(cardForDelete.id)
+    .then(() => {
+      cardForDelete.cardElement.remove();
+      closeModal(popupDeleteCard);
+      cardForDelete = {};
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  
+}
 
 
 profileEditForm.addEventListener("submit", handleProfileFormSubmit);
