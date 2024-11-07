@@ -27,7 +27,7 @@ const checkInputValidity = (formElement, inputElement, { inputErrorClass, errorC
   }
 };
 
-const setEventListeners = (formElement, { inputSelector, submitButtonSelector, inactiveButtonClass }) => {
+const setEventListeners = (formElement, { inputSelector, submitButtonSelector, inactiveButtonClass, inputErrorClass, errorClass }) => {
   const inputList = Array.from(formElement.querySelectorAll(inputSelector));
   const buttonElement = formElement.querySelector(submitButtonSelector);
 
@@ -35,7 +35,7 @@ const setEventListeners = (formElement, { inputSelector, submitButtonSelector, i
 
   inputList.forEach((inputElement) => {
     inputElement.addEventListener('input', function () {
-      checkInputValidity(formElement, inputElement, { inputErrorClass: validationConfig.inputErrorClass, errorClass: validationConfig.errorClass });
+      checkInputValidity(formElement, inputElement, {inputErrorClass, errorClass});
       toggleButtonState(inputList, buttonElement, inactiveButtonClass);
     });
   });
